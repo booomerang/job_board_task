@@ -10,4 +10,5 @@ Homestead.json
 tests/_output/*
 
 public/storage/uploads/
+public/assets/
 public/sitemap.xml
