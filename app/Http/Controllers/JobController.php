@@ -38,9 +38,12 @@ class JobController extends Controller
      */
     public function store(Request $request)
     {
-        //var_dump($request->all());
+        // Add Validation
+
         $job = new Job($request->input('job'));
         $result = $job->save();
+
+        // Sending an email with generated link for editing and deleting
 
         if (!$result) {
             // Error occured
@@ -57,7 +60,8 @@ class JobController extends Controller
      */
     public function show($id)
     {
-        //
+        $job = Job::findOrFail($id);
+        return view('jobs.show', ['job' => $job]);
     }
 
     /**
