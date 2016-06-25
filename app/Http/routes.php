@@ -11,6 +11,6 @@
 |
 */
 
-Route::get('/', ['uses' => 'JobController@index']);
+Route::get('/', ['as' => 'job.index', 'uses' => 'JobController@index']);
 
 Route::resource('job', 'JobController', ['except' => ['index']]);

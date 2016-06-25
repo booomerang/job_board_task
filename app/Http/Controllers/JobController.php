@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Job;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -15,7 +16,8 @@ class JobController extends Controller
      */
     public function index()
     {
-        return view('jobs.index');
+        $jobs = Job::orderBy('updated_at', 'desc')->take(6)->get();
+        return view('jobs.index', ['index' => true, 'jobs' => $jobs]);
     }
 
     /**
@@ -36,7 +38,15 @@ class JobController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //var_dump($request->all());
+        $job = new Job($request->input('job'));
+        $result = $job->save();
+
+        if (!$result) {
+            // Error occured
+        }
+
+        return redirect()->route('job.index');
     }
 
     /**
