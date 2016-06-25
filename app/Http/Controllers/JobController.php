@@ -38,7 +38,11 @@ class JobController extends Controller
      */
     public function store(Request $request)
     {
-        // Add Validation
+        $this->validate($request, [
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'user_email' => 'required|email',
+        ]);
 
         $job = new Job($request->input('job'));
         $result = $job->save();
