@@ -11,6 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('layout');
-});
+Route::get('/', ['uses' => 'JobController@index']);
+
+Route::resource('job', 'JobController', ['except' => ['index']]);
