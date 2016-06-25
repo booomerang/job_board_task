@@ -34,14 +34,16 @@
                 <li role="presentation"><a href="#">Contact</a></li>
             </ul>
         </nav>
-        <h3 class="text-muted">Cool Job Board</h3>
+        <h3 class="text-muted"><a href="/">Cool Job Board</a></h3>
     </div>
 
+    @if(isset($index) && $index)
     <div class="jumbotron">
         <h1>Jumbotron heading</h1>
         <p class="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
         <p><a class="btn btn-lg btn-success" href="{{ route('job.create') }}" role="button">Add job post</a></p>
     </div>
+    @endif
 
     <div class="row marketing">
         @yield('content')
