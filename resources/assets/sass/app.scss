@@ -1,5 +1,7 @@
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
+@import "./ie10-viewport-bug-workaround";
+
 /* Space out content a bit */
 body {
   padding-top: 20px;
