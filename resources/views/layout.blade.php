@@ -5,11 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="Cool job board">
+    <meta name="description" content="{{ config('project.name') }}">
     <meta name="author" content="">
     <link rel="icon" href="/assets/images/favicon.ico">
 
-    <title>@yield('title', 'Cool job board')</title>
+    <title>@yield('title', config('project.name'))</title>
 
     <!-- Bootstrap core CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
@@ -35,7 +35,7 @@
                 <li role="presentation"><a href="#">Contact</a></li>
             </ul>
         </nav>
-        <h3 class="text-muted"><a href="/">Cool Job Board</a></h3>
+        <h3 class="text-muted"><a href="/">{{ config('project.name') }}</a></h3>
     </div>
 
     <div>
