@@ -30,4 +30,10 @@ class Job extends Model
     ];
 
     protected $dates = ['deleted_at'];
+
+
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'job_skill');
+    }
 }
