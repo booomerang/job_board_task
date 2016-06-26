@@ -19,6 +19,12 @@ class JobController extends Controller
     public function __construct(MailerContract $mailer)
     {
         $this->mailer = $mailer;
+
+        $this->middleware('job_access', ['only' => [
+            'edit',
+            'update',
+            'destroy'
+        ]]);
     }
 
     /**
@@ -56,6 +62,7 @@ class JobController extends Controller
             'job.user_email' => 'required|email',
         ]);
 
+        // Should been made not here, should been made using repositories or another class using TokenRepositoryInterface
         $jobAccessToken = $this->generateToken();
 
         $job = new Job($request->input('job'));
@@ -94,7 +101,8 @@ class JobController extends Controller
      */
     public function edit($id)
     {
-        //
+        $job = Job::findOrFail($id);
+        return view('jobs.edit', ['job' => $job]);
     }
 
     /**
