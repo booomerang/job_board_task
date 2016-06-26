@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Job extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'jobs';
 
     /**
@@ -25,4 +28,6 @@ class Job extends Model
     protected $hidden = [
         'job_access_token'
     ];
+
+    protected $dates = ['deleted_at'];
 }

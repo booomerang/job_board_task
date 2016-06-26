@@ -125,7 +125,8 @@ class JobController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $job = Job::findOrFail($id)->delete();
+        return view('jobs.index');
     }
 
     protected function generateToken()
