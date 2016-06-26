@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
+use App\Models\Skill;
 use Illuminate\Contracts\Mail\Mailer as MailerContract;
 use Illuminate\Http\Request;
 
@@ -62,6 +63,14 @@ class JobController extends Controller
             'job.user_email' => 'required|email',
         ]);
 
+        $skills = $request->input('skills');
+        $skillsIds = [];
+        foreach($skills as $skill) {
+            $skillsIds[] = Skill::insertGetId([
+                'name' => $skill
+            ]);
+        }
+
         // Should been made not here, should been made using repositories or another class using TokenRepositoryInterface
         $jobAccessToken = $this->generateToken();
 
@@ -80,6 +89,9 @@ class JobController extends Controller
                 $message->from('hello@cooljobboard.com', 'Cool Job Board');
                 $message->to($job->user_email)->subject('Thank you for posting a job!');
             });
+
+
+            $job->skills()->attach($skillsIds);
         }
 
         return redirect()->route('job.show', ['id' => $job->id]);
@@ -122,13 +134,30 @@ class JobController extends Controller
         $job->fill($request->input('job'));
         $result = $job->save();
 
+        $skills = $request->input('skills');
+
+        $skillsIds = [];
+        foreach($skills as $skill) {
+            if (ctype_digit($skill)) {
+                $skillsIds[] = (int) $skill;
+            } else {
+                $skillsIds[] = Skill::insertGetId([
+                    'name' => $skill
+                ]);
+            }
+        }
+
         if ($result != false) {
             flash()->success('The job post successfully updated!');
+
+            if (!empty($skillsIds)) {
+                $job->skills()->sync($skillsIds);
+            }
         } else {
             flash()->error('Something went wrong while saving!');
         }
 
-        return redirect()->route('job.edit', ['id' => $job->id]);
+        return redirect()->route('job.edit', ['id' => $job->id, 'job_access_token' => $job->job_access_token]);
     }
 
     /**
@@ -139,7 +168,9 @@ class JobController extends Controller
      */
     public function destroy($id)
     {
-        $result = Job::findOrFail($id)->delete();
+        $job = Job::findOrFail($id);
+        $job->skills()->detach();
+        $result = $job->delete();
 
         if ($result != false) {
             flash()->success('The job post successfully deleted!');

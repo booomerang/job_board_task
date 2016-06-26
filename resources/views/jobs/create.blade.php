@@ -21,9 +21,20 @@
 
         <div class="form-group">
             <label for="jobSkillsInput">Your skills</label>
-            <input type="text" class="form-control" id="jobSkillsInput" name="skills[]">
+            {{--<input type="text" class="form-control" id="jobSkillsInput" name="skills[]">--}}
+            <select id="jobSkillsInput" class="form-control" name="skills[]" multiple="multiple"></select>
         </div>
 
         <button type="submit" class="btn btn-default btn-success">Create</button>
     </form>
+@endsection
+
+@section('javascript')
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#jobSkillsInput").select2({
+            tags: true
+        });
+    });
+</script>
 @endsection
