@@ -96,13 +96,14 @@ class JobController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
         $job = Job::findOrFail($id);
-        return view('jobs.edit', ['job' => $job]);
+        return view('jobs.edit', ['job' => $job, 'job_access_token' => $request->input('job_access_token')]);
     }
 
     /**
@@ -114,7 +115,11 @@ class JobController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $job = Job::findOrFail($id);
+        $job->fill($request->input('job'));
+        $result = $job->save();
+
+        return redirect()->route('job.edit', ['id' => $job->id]);
     }
 
     /**
@@ -125,8 +130,8 @@ class JobController extends Controller
      */
     public function destroy($id)
     {
-        $job = Job::findOrFail($id)->delete();
-        return view('jobs.index');
+        Job::findOrFail($id)->delete();
+        return redirect()->route('job.index');
     }
 
     protected function generateToken()
