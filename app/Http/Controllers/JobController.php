@@ -3,12 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Job;
+use Illuminate\Contracts\Mail\Mailer as MailerContract;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
 class JobController extends Controller
 {
+
+    /**
+     * @var \Illuminate\Mail\Mailer
+     */
+    protected $mailer;
+
+    public function __construct(MailerContract $mailer)
+    {
+        $this->mailer = $mailer;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -39,19 +51,25 @@ class JobController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'title' => 'required|max:255',
-            'description' => 'required',
-            'user_email' => 'required|email',
+            'job.title' => 'required|max:255',
+            'job.description' => 'required',
+            'job.user_email' => 'required|email',
         ]);
 
+        $jobAccessToken = $this->generateToken();
+
         $job = new Job($request->input('job'));
+        $job->job_access_token = $jobAccessToken;
         $result = $job->save();
 
-        // Sending an email with generated link for editing and deleting
-
         if (!$result) {
-            // Error occured
+            // An error occured
         }
+
+        $this->mailer->queue('emails.jobposting', ['job'=>$job], function ($message) use ($job) {
+            $message->from('hello@cooljobboard.com', 'Cool Job Board');
+            $message->to($job->user_email)->subject('Thank you for posting a job!');
+        });
 
         return redirect()->route('job.index');
     }
@@ -100,5 +118,11 @@ class JobController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    protected function generateToken()
+    {
+        //return hash_hmac('sha256', str_random(20), config('app.key'));
+        return str_random(20);
     }
 }
