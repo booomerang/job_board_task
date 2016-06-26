@@ -37,6 +37,10 @@
         <h3 class="text-muted"><a href="/">Cool Job Board</a></h3>
     </div>
 
+    <div>
+        @include('flash::message')
+    </div>
+
     @if(isset($index) && $index)
     <div class="jumbotron">
         <h1>Jumbotron heading</h1>

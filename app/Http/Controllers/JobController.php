@@ -69,16 +69,20 @@ class JobController extends Controller
         $job->job_access_token = $jobAccessToken;
         $result = $job->save();
 
-        if (!$result) {
-            // An error occured
+        if ($result) {
+            flash()->success('The job post successfully created!');
+            $request->session()->flash('job_created.link', route('job.edit', [
+                'id' => $job->id,
+                'job_access_token' => $jobAccessToken,
+            ]));
+
+            $this->mailer->queue('emails.jobposting', ['job'=>$job], function ($message) use ($job) {
+                $message->from('hello@cooljobboard.com', 'Cool Job Board');
+                $message->to($job->user_email)->subject('Thank you for posting a job!');
+            });
         }
 
-        $this->mailer->queue('emails.jobposting', ['job'=>$job], function ($message) use ($job) {
-            $message->from('hello@cooljobboard.com', 'Cool Job Board');
-            $message->to($job->user_email)->subject('Thank you for posting a job!');
-        });
-
-        return redirect()->route('job.index');
+        return redirect()->route('job.show', ['id' => $job->id]);
     }
 
     /**
@@ -97,13 +101,12 @@ class JobController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int $id
-     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function edit($id, Request $request)
+    public function edit($id)
     {
         $job = Job::findOrFail($id);
-        return view('jobs.edit', ['job' => $job, 'job_access_token' => $request->input('job_access_token')]);
+        return view('jobs.edit', ['job' => $job, 'job_access_token' => $job->job_access_token]);
     }
 
     /**
@@ -119,6 +122,12 @@ class JobController extends Controller
         $job->fill($request->input('job'));
         $result = $job->save();
 
+        if ($result != false) {
+            flash()->success('The job post successfully updated!');
+        } else {
+            flash()->error('Something went wrong while saving!');
+        }
+
         return redirect()->route('job.edit', ['id' => $job->id]);
     }
 
@@ -130,7 +139,14 @@ class JobController extends Controller
      */
     public function destroy($id)
     {
-        Job::findOrFail($id)->delete();
+        $result = Job::findOrFail($id)->delete();
+
+        if ($result != false) {
+            flash()->success('The job post successfully deleted!');
+        } else {
+            flash()->error('Something went wrong while deleting!');
+        }
+
         return redirect()->route('job.index');
     }
 
